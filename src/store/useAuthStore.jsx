@@ -8,7 +8,6 @@ export const useAuthStore = create((set) => ({
   sessionExpired: false,
 
   initializeAuth: () => {
-    // SANGAT SIMPLE: Cek localStorage dan set state
     const token = localStorage.getItem("token");
 
     if (token) {

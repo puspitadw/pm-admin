@@ -7,7 +7,7 @@ import FlowCanvas from "../components/FlowCanvas";
 
 import { useAuthStore } from "../store/useAuthStore";
 import { validatePublishFlow } from "../utils/publishValidation";
-import { ValidationNotification } from "../components/ValidNotification"; // PERBAIKAN: Import notification
+import { ValidationNotification } from "../components/ValidNotification"; 
 
 export default function Design() {
   const currentFlowId = useFlowStore((s) => s.currentFlowId);
@@ -21,7 +21,7 @@ export default function Design() {
   const [draggedProcessor, setDraggedProcessor] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
-  const [notification, setNotification] = useState(null); // PERBAIKAN: Tambah state notification
+  const [notification, setNotification] = useState(null); 
   const [publishSuccess, setPublishSuccess] = useState(false);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function Design() {
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial call
+    handleResize(); 
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -51,7 +51,6 @@ export default function Design() {
     setDraggedProcessor(processor);
     setIsSidebarOpen(false);
 
-    // Show visual feedback di canvas
     const canvas = document.querySelector('[data-flow-canvas]');
     if (canvas) {
       canvas.style.border = "2px dashed #0F766E";
@@ -64,11 +63,9 @@ export default function Design() {
       const addNode = useFlowStore.getState().addNode;
       addNode(position, draggedProcessor.name);
 
-      // Reset state
       setIsMobileDragMode(false);
       setDraggedProcessor(null);
 
-      // Reset canvas visual
       const canvas = document.querySelector('[data-flow-canvas]');
       if (canvas) {
         canvas.style.border = "none";
@@ -93,14 +90,12 @@ export default function Design() {
     handleMobileDrop(position);
   }, [isMobileDragMode, draggedProcessor, handleMobileDrop]);
 
-  // PERBAIKAN: Handle publish untuk mobile/tablet
   const handlePublishClick = () => {
     const validation = validatePublishFlow(nodes, edges);
 
     if (validation.status === 'VALID') {
       setShowPublishModal(true);
     } else {
-      // PERBAIKAN: Ganti alert() dengan notification component
       setNotification({
         message: validation.message,
         type: validation.type || 'warning',
@@ -108,10 +103,8 @@ export default function Design() {
     }
   };
 
-  // PERBAIKAN: Fungsi publish untuk mobile/tablet
   const handleMobilePublish = async () => {
     try {
-      // Siapkan payload
       const publishPayload = {
         flowId: currentFlowId,
         processors: nodes.map(node => ({
@@ -138,13 +131,10 @@ export default function Design() {
 
       console.log("Mobile publishing:", publishPayload);
 
-      // Simulasi API call
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Set success state
       setPublishSuccess(true);
 
-      // Redirect setelah 2 detik
       setTimeout(() => {
         setShowPublishModal(false);
         setPublishSuccess(false);
@@ -233,7 +223,6 @@ export default function Design() {
   const sidebarWidth = isMobile ? (isSidebarOpen ? "280px" : "0") :
     isTablet ? "280px" : "320px";
 
-  // Profile Menu Style
   const profileMenuStyle = {
     position: "fixed",
     top: "60px",

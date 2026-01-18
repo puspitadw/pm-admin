@@ -9,14 +9,13 @@ export default function PublishModal({ onClose }) {
     const [isPublishing, setIsPublishing] = useState(false);
     const [notification, setNotification] = useState(null);
     const [publishSuccess, setPublishSuccess] = useState(false);
-    const [redirectCountdown, setRedirectCountdown] = useState(3); // PERBAIKAN: Tambah countdown
+    const [redirectCountdown, setRedirectCountdown] = useState(3); 
 
     const currentFlowId = useFlowStore(state => state.currentFlowId);
     const nodes = useFlowStore(state => state.flows[currentFlowId]?.nodes ?? []);
     const edges = useFlowStore(state => state.flows[currentFlowId]?.edges ?? []);
     const navigate = useNavigate();
 
-    // PERBAIKAN: Handle countdown untuk redirect
     useEffect(() => {
         if (publishSuccess && redirectCountdown > 0) {
             const timer = setTimeout(() => {
@@ -24,7 +23,6 @@ export default function PublishModal({ onClose }) {
             }, 1000);
             return () => clearTimeout(timer);
         } else if (publishSuccess && redirectCountdown === 0) {
-            // Redirect setelah countdown selesai
             onClose();
             navigate("/dashboard");
         }
@@ -47,12 +45,10 @@ export default function PublishModal({ onClose }) {
         }
     };
 
-    // PERBAIKAN: Fungsi publish yang lebih baik
     const handlePublish = async () => {
         setIsPublishing(true);
 
         try {
-            // 1. Siapkan payload JSON lengkap
             const publishPayload = {
                 flowId: currentFlowId,
                 processors: nodes.map(node => ({
@@ -79,10 +75,8 @@ export default function PublishModal({ onClose }) {
 
             console.log("Publishing payload:", publishPayload);
 
-            // 2. Simulasi API call
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // 3. Simulasi response sukses
             const mockResponse = {
                 success: true,
                 message: "Design published successfully!",
@@ -90,7 +84,6 @@ export default function PublishModal({ onClose }) {
                 timestamp: new Date().toISOString()
             };
 
-            // 4. Tampilkan notifikasi sukses dan mulai countdown
             setIsPublishing(false);
             setPublishSuccess(true);
             setNotification({
@@ -98,10 +91,8 @@ export default function PublishModal({ onClose }) {
                 type: "success",
             });
 
-            // PERBAIKAN: Tidak perlu setTimeout tambahan, sudah dihandle oleh useEffect
 
         } catch (error) {
-            // Handle error
             setIsPublishing(false);
             setNotification({
                 message: "Failed to publish design. Please try again.",
@@ -138,7 +129,6 @@ export default function PublishModal({ onClose }) {
         }, null, 2);
     };
 
-    // Styles - Perbaikan style untuk success state
     const overlayStyle = {
         position: "fixed",
         inset: 0,
@@ -257,7 +247,6 @@ export default function PublishModal({ onClose }) {
         transition: "all 0.2s ease",
     };
 
-    // PERBAIKAN: Manual redirect button untuk fallback
     const handleManualRedirect = () => {
         onClose();
         navigate("/dashboard");

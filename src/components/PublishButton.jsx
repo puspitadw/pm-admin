@@ -13,17 +13,17 @@ export default function PublishButton({ onValid }) {
     const {
         showNotification,
         NotificationComponent
-    } = useValidationNotification(); // HAPUS hideNotification dari sini
+    } = useValidationNotification(); 
 
     const handlePublish = () => {
         const validation = validatePublishFlow(nodes, edges);
 
         if (validation.status === 'VALID') {
             setIsLoading(true);
-            // Simulate API call
+            
             setTimeout(() => {
                 setIsLoading(false);
-                onValid(); // Open publish modal
+                onValid();  
             }, 1000);
         } else {
             showNotification(validation);

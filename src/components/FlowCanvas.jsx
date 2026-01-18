@@ -16,7 +16,6 @@ export default function FlowCanvas({ setShowPublishModal }) {
     const onNodesChange = useFlowStore((s) => s.onNodesChange);
     const onEdgesChange = useFlowStore((s) => s.onEdgesChange);
     const removeNodeById = useFlowStore((s) => s.removeNodeById);
-    // Di bagian useFlowStore hooks, TAMBAHKAN ini:
     const updateNodePosition = useFlowStore((s) => s.updateNodePosition);
     const reactFlowInstance = useReactFlow();
     const wrapperRef = useRef(null);
@@ -29,13 +28,12 @@ export default function FlowCanvas({ setShowPublishModal }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isTablet, setIsTablet] = useState(window.innerWidth >= 768 && window.innerWidth < 1024);
     const [connectionError, setConnectionError] = useState(null);
+    const [lastTappedEdgeId, setLastTappedEdgeId] = useState(null);
 
-    // PERBAIKAN: Define nodeTypes dengan useMemo
     const nodeTypes = useMemo(() => ({
         processor: ProcessorNode
     }), []);
 
-    // Detect responsive view
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
@@ -47,7 +45,6 @@ export default function FlowCanvas({ setShowPublishModal }) {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Hapus node / edge pakai Delete
     useEffect(() => {
         const onKeyDown = (e) => {
             if (e.key === "Delete") {
@@ -88,6 +85,34 @@ export default function FlowCanvas({ setShowPublishModal }) {
         setIsDialogOpen(true);
         setConnectionError(null);
     }, []);
+
+    const handlePaneClick = useCallback(() => {
+        setLastTappedEdgeId(null);
+    }, []);
+
+
+    const handleEdgeClick = useCallback((event, edge) => {
+        event.stopPropagation();
+        setLastTappedEdgeId(edge.id);
+        // unselect semua node
+        onNodesChange(
+            nodes.map((n) => ({
+                id: n.id,
+                type: "select",
+                selected: false,
+            }))
+        );
+
+        onEdgesChange([
+            {
+                id: edge.id,
+                type: "select",
+                selected: true,
+            },
+        ]);
+    }, [nodes, onNodesChange, onEdgesChange]);
+
+
 
     const confirmConnection = (relationship) => {
         if (!pendingConnection) return;
@@ -142,30 +167,44 @@ export default function FlowCanvas({ setShowPublishModal }) {
     }, []);
 
     const handleNodeDragStop = useCallback((event, node) => {
-        // Simpan posisi terakhir ke localStorage
         updateNodePosition(node.id, node.position);
         console.log('✅ Node position saved:', node.id, node.position);
     }, [updateNodePosition]);
 
-    // 🔥 TAMBAHAN: Handler hapus untuk mobile & tablet
     const handleDeleteSelected = useCallback(() => {
-        const selectedNode = nodes.find((n) => n.selected);
-        if (selectedNode) {
-            removeNodeById(selectedNode.id);
+        const selectedNodes = nodes.filter((n) => n.selected);
+        if (selectedNodes.length > 0) {
+            onNodesChange(
+                selectedNodes.map((n) => ({
+                    id: n.id,
+                    type: "remove",
+                }))
+            );
+        }
+
+        if (lastTappedEdgeId) {
+            onEdgesChange([
+                {
+                    id: lastTappedEdgeId,
+                    type: "remove",
+                },
+            ]);
+            setLastTappedEdgeId(null);
             return;
         }
 
-        const selectedEdge = edges.find((e) => e.selected);
-        if (selectedEdge) {
-            storeOnConnect({
-                ...selectedEdge,
-                deleted: true,
-            });
+        const selectedEdges = edges.filter((e) => e.selected);
+        if (selectedEdges.length > 0) {
+            onEdgesChange(
+                selectedEdges.map((e) => ({
+                    id: e.id,
+                    type: "remove",
+                }))
+            );
         }
-    }, [nodes, edges, removeNodeById, storeOnConnect]);
+    }, [nodes, edges, lastTappedEdgeId, onNodesChange, onEdgesChange]);
 
 
-    // Handler untuk button publish
     const handleDesktopPublish = useCallback(() => {
         if (isMobile || isTablet) {
             if (setShowPublishModal) {
@@ -178,13 +217,14 @@ export default function FlowCanvas({ setShowPublishModal }) {
         }
     }, [setShowPublishModal, isMobile, isTablet]);
 
-    // PERBAIKAN: Props untuk React Flow - FIXED (tanpa touchAction yang invalid)
     const reactFlowProps = useMemo(() => ({
         nodes,
         edges,
         onNodesChange,
         onEdgesChange,
         onConnect: handleConnect,
+        onEdgeClick: handleEdgeClick,
+        onPaneClick: handlePaneClick,
         onMove: (_event, viewport) => handleZoom(viewport),
         onNodeDragStop: handleNodeDragStop,
         nodeTypes: nodeTypes,
@@ -200,7 +240,6 @@ export default function FlowCanvas({ setShowPublishModal }) {
         maxZoom: 2,
         defaultViewport: { x: 100, y: 100, zoom: 1 },
 
-        // Props untuk mobile/tablet support
         panOnDrag: isMobile || isTablet ? [0] : [1, 2],
         panOnScroll: false,
         zoomOnScroll: isMobile || isTablet ? false : true,
@@ -214,11 +253,10 @@ export default function FlowCanvas({ setShowPublishModal }) {
         multiSelectionKeyCode: null,
         connectionRadius: 30,
     }), [
-        nodes, edges, onNodesChange, onEdgesChange, handleConnect,
-        handleZoom, handleNodeDragStop, nodeTypes, isMobile, isTablet
+        nodes, edges, onNodesChange, onEdgesChange, handleConnect, handleEdgeClick,
+        handlePaneClick, handleZoom, handleNodeDragStop, nodeTypes, isMobile, isTablet
     ]);
 
-    // Responsive Styles
     const desktopPublishButtonStyle = {
         padding: "10px 20px",
         background: "linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)",
@@ -322,7 +360,6 @@ export default function FlowCanvas({ setShowPublishModal }) {
         textAlign: "center",
     };
 
-    // PERBAIKAN: Canvas container style - tambah touchAction di sini
     const canvasContainerStyle = {
         flex: 1,
         position: "relative",
@@ -334,8 +371,8 @@ export default function FlowCanvas({ setShowPublishModal }) {
         backgroundSize: "20px 20px",
         backgroundPosition: "-1px -1px",
         overflow: "hidden",
-        touchAction: "none", // PERBAIKAN: Pindah ke sini dari reactFlowProps
-        WebkitTapHighlightColor: "transparent", // Untuk iOS
+        touchAction: "none", 
+        WebkitTapHighlightColor: "transparent", 
     };
 
     const dropHintStyle = {
@@ -567,7 +604,6 @@ export default function FlowCanvas({ setShowPublishModal }) {
                 onDrop={onDrop}
                 onDragOver={(e) => e.preventDefault()}
             >
-                {/* PERBAIKAN: Ganti dengan reactFlowProps yang sudah difixed */}
                 <ReactFlow {...reactFlowProps}>
                     {/* Canvas Background */}
                     <Background
@@ -627,13 +663,13 @@ export default function FlowCanvas({ setShowPublishModal }) {
                     )}
                 </ReactFlow>
 
-                {/* 🔥 Tombol Hapus untuk Mobile & Tablet */}
-                {(isMobile || isTablet) && (nodes.some(n => n.selected) || edges.some(e => e.selected)) && (
+                {/* Tombol Hapus untuk Mobile & Tablet */}
+                {(isMobile || isTablet) && (nodes.some(n => n.selected) || lastTappedEdgeId) && (
                     <button
                         onClick={handleDeleteSelected}
                         style={{
                             position: "absolute",
-                            bottom: "20px",
+                            bottom: isMobile ? "72px" : "88px",
                             right: "20px",
                             padding: "12px 16px",
                             backgroundColor: "#DC2626",

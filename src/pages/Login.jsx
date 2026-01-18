@@ -10,16 +10,13 @@ export default function Login() {
     const error = useAuthStore((state) => state.error);
     const sessionExpired = useAuthStore((state) => state.sessionExpired);
     const clearError = useAuthStore((state) => state.clearError);
-    // HAPUS: const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // HAPUS useEffect yang panggil initializeAuth!
 
-    // Auto-redirect jika sudah login
     useEffect(() => {
         const { isAuthenticated } = useAuthStore.getState();
         if (isAuthenticated) {
@@ -27,7 +24,6 @@ export default function Login() {
         }
     }, [navigate]);
 
-    // Clear error saat user ketik (tetap pertahankan)
     useEffect(() => {
         const handleInput = () => {
             if (error || sessionExpired) {
@@ -67,7 +63,6 @@ export default function Login() {
         ? "Session expired. Please login again."
         : error;
 
-    // JSX TETAP SAMA 100% seperti semula
     return (
         <div className="min-h-screen w-full flex">
             {/* Background */}

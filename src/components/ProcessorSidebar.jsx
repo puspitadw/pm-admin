@@ -75,7 +75,6 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
     const isTablet = windowWidth >= 768 && windowWidth < 1024;
     const isTouchDevice = isMobile || isTablet;
 
-    // Helper function untuk update style dengan safe check
     const safeUpdateStyle = (element, styles) => {
         if (!element || !element.style) return;
         
@@ -86,11 +85,9 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
         });
     };
 
-    // Deklarasikan handleLongPress terlebih dahulu
     const handleLongPress = useCallback((touch, processor, element) => {
         setLongPressActive(true);
         
-        // Visual feedback untuk long press
         safeUpdateStyle(element, {
             opacity: "0.7",
             boxShadow: "0 0 0 3px rgba(14, 165, 233, 0.4)",
@@ -119,13 +116,11 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
             element: targetElement
         });
 
-        // Visual feedback awal
         safeUpdateStyle(targetElement, {
             opacity: "0.9",
             transform: "scale(0.99)"
         });
 
-        // Start long press timer
         touchTimerRef.current = setTimeout(() => {
             const currentTouch = {
                 clientX: touch.clientX,
@@ -152,7 +147,6 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
             if (isTouchDevice && onMobileDragStart) {
                 setLongPressActive(true);
                 
-                // Visual feedback untuk dragging
                 if (activeTouch.element) {
                     safeUpdateStyle(activeTouch.element, {
                         opacity: "0.5",
@@ -175,7 +169,6 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
             touchTimerRef.current = null;
         }
 
-        // Reset visual state
         if (activeTouch?.element) {
             safeUpdateStyle(activeTouch.element, {
                 opacity: "1",
@@ -201,14 +194,12 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
         );
         event.dataTransfer.effectAllowed = "move";
 
-        // Visual feedback untuk desktop
         safeUpdateStyle(event.currentTarget, {
             opacity: "0.7"
         });
     }, []);
 
     const handleDragEnd = useCallback(() => {
-        // Reset visual untuk semua processor cards
         const processorCards = document.querySelectorAll('[data-processor-card]');
         processorCards.forEach(card => {
             safeUpdateStyle(card, {
@@ -219,7 +210,6 @@ export default function ProcessorSidebar({ onMobileDragStart }) {
         });
     }, []);
 
-    // Setup global touch event listeners
     useEffect(() => {
         const handleGlobalTouchMove = (e) => {
             handleTouchMove(e);

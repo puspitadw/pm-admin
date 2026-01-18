@@ -25,7 +25,6 @@ export default function MainLayout({ children }) {
   const isActive = (path) => location.pathname === path;
   const isDesignPage = location.pathname === "/design";
 
-  // Base styles
   const containerStyle = {
     height: "100vh",
     display: "flex",
@@ -148,7 +147,6 @@ export default function MainLayout({ children }) {
     transition: "all 0.2s ease",
   });
 
-  // TAMBAH: Tombol Back to Dashboard di sidebar
   const backToDashboardButtonStyle = {
     display: "flex",
     alignItems: "center",
@@ -304,7 +302,6 @@ export default function MainLayout({ children }) {
     transition: "all 0.2s ease",
   };
 
-  // TAMBAH: Tombol Back to Dashboard di header desktop (hanya di halaman design)
   const desktopBackButtonStyle = {
     display: "flex",
     alignItems: "center",
@@ -360,7 +357,6 @@ export default function MainLayout({ children }) {
     cursor: "pointer",
   };
 
-  // TAMBAH: Tombol Back di mobile info bar (hanya di halaman design)
   const mobileBackButtonStyle = {
     padding: "6px 12px",
     background: "linear-gradient(135deg, #0f766e 0%, #0891b2 100%)",
@@ -423,7 +419,6 @@ export default function MainLayout({ children }) {
     zIndex: 999,
   };
 
-  // Media queries for responsive design
   const mediaQueries = `
         @media (min-width: 768px) {
             .mobile-header { display: none; }

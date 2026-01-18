@@ -34,7 +34,7 @@ export const useFlowStore = create(
                                     ...flow.nodes,
                                     {
                                         id: nanoid(),
-                                        type: "processor", // 🔥 INI YANG HILANG
+                                        type: "processor", 
                                         position,
                                         data: { label },
                                     },
@@ -103,10 +103,10 @@ export const useFlowStore = create(
 
                     const newEdge = {
                         ...connection,
-                        type: 'default',      // tipe default
-                        animated: false,      // matikan animasi
+                        type: 'default',      
+                        animated: false,      
                         markerEnd: {
-                            type: 'arrow',      // tambahkan panah di ujung
+                            type: 'arrow',      
                         },
                     };
 
@@ -121,12 +121,10 @@ export const useFlowStore = create(
                     };
                 }),
 
-            // Di file useFlowStore.jsx, TAMBAHKAN function ini:
 
-            // Di useFlowStore.jsx
-            removeNodeById: (nodeId) => // ← TAMBAH parameter flowId
+            removeNodeById: (nodeId) => 
                 set((state) => {
-                    const flow = state.flows[state.currentFlowId]; // ← Pakai currentFlowId
+                    const flow = state.flows[state.currentFlowId]; 
                     if (!flow) return state;
 
                     return {

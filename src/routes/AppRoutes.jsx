@@ -8,18 +8,13 @@ import { useAuthStore } from "../store/useAuthStore";
 function ProtectedRoute({ children }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  // Cek juga localStorage langsung sebagai backup
   const token = localStorage.getItem("token");
 
-  // Jika tidak ada token sama sekali, langsung redirect
   if (!token) {
     return <Navigate to="/" replace />;
   }
 
-  // Jika ada token tapi state belum update (race condition), 
-  // beri waktu sebentar untuk state sync
   if (!isAuthenticated && token) {
-    // Bisa tampilkan loading spinner sebentar
     return (
       <div style={{
         display: 'flex',
