@@ -1,0 +1,180 @@
+@import "tailwindcss";
+/* NiFi-like Canvas Styles */
+
+/* React Flow Customizations */
+.react-flow__node {
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.react-flow__node:active {
+  cursor: grabbing;
+}
+
+.react-flow__node:hover {
+  filter: brightness(0.98);
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke-width: 3;
+  filter: drop-shadow(0 0 2px rgba(0, 120, 212, 0.5));
+}
+
+.react-flow__edge.animated path {
+  stroke-dasharray: 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+@keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
+}
+
+.react-flow__controls {
+  border: 1px solid #E1E4E8 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+}
+
+.react-flow__controls-button {
+  border: none !important;
+  border-bottom: 1px solid #F1F3F5 !important;
+  background: white !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #FAFBFC !important;
+}
+
+.react-flow__controls-button svg {
+  fill: #6A737D !important;
+}
+
+.react-flow__minimap {
+  border: 1px solid #E1E4E8 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  background: white !important;
+}
+
+.react-flow__background {
+  background-color: transparent !important;
+}
+
+/* Connection line styles */
+.react-flow__connectionline {
+  z-index: 1000;
+}
+
+/* Selection box */
+.react-flow__selection {
+  background: rgba(0, 120, 212, 0.1);
+  border: 1px solid rgba(0, 120, 212, 0.5);
+  border-radius: 4px;
+}
+
+/* Handle hover effects */
+.react-flow__handle {
+  transition: all 0.2s ease;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.2);
+}
+
+/* Canvas grid pattern */
+.canvas-grid {
+  background-size: 20px 20px;
+  background-image:
+    linear-gradient(to right, #F1F3F5 1px, transparent 1px),
+    linear-gradient(to bottom, #F1F3F5 1px, transparent 1px);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F3F5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DA;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6A737D;
+}
+
+@media (max-width: 767px) {
+    .react-flow__viewport {
+        transform-origin: 0 0;
+        transform: scale(0.8) !important;
+    }
+    
+    .react-flow__node {
+        transform: scale(1.2);
+    }
+}
+
+/* Prevent text overflow */
+.text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 767px) {
+    button, 
+    [role="button"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Tambah di index.css */
+@media (max-width: 480px) {
+  .responsive-text {
+    font-size: clamp(12px, 3.5vw, 14px) !important;
+  }
+  
+  .responsive-hide {
+    display: none !important;
+  }
+  
+  .responsive-stack {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
+
+/* Text overflow handling */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Safe area for mobile */
+@supports (padding: max(0px)) {
+  .mobile-safe {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
