@@ -10,6 +10,10 @@ pnpm dev
 2. cd project
 3. pnpm install
 
+## 🌐 Live Demo
+The application is deployed and available at:
+https://pm-admin-two.vercel.app/
+
 ## 🛠 Tech Stack Used
 - React
 - Vite
