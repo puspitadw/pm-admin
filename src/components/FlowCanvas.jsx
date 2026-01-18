@@ -17,7 +17,7 @@ export default function FlowCanvas({ setShowPublishModal }) {
     const onEdgesChange = useFlowStore((s) => s.onEdgesChange);
     const removeNodeById = useFlowStore((s) => s.removeNodeById);
     // Di bagian useFlowStore hooks, TAMBAHKAN ini:
-const updateNodePosition = useFlowStore((s) => s.updateNodePosition);
+    const updateNodePosition = useFlowStore((s) => s.updateNodePosition);
     const reactFlowInstance = useReactFlow();
     const wrapperRef = useRef(null);
     const NODE_WIDTH = 180;
@@ -142,10 +142,28 @@ const updateNodePosition = useFlowStore((s) => s.updateNodePosition);
     }, []);
 
     const handleNodeDragStop = useCallback((event, node) => {
-  // Simpan posisi terakhir ke localStorage
-  updateNodePosition(node.id, node.position);
-  console.log('✅ Node position saved:', node.id, node.position);
-}, [updateNodePosition]);
+        // Simpan posisi terakhir ke localStorage
+        updateNodePosition(node.id, node.position);
+        console.log('✅ Node position saved:', node.id, node.position);
+    }, [updateNodePosition]);
+
+    // 🔥 TAMBAHAN: Handler hapus untuk mobile & tablet
+    const handleDeleteSelected = useCallback(() => {
+        const selectedNode = nodes.find((n) => n.selected);
+        if (selectedNode) {
+            removeNodeById(selectedNode.id);
+            return;
+        }
+
+        const selectedEdge = edges.find((e) => e.selected);
+        if (selectedEdge) {
+            storeOnConnect({
+                ...selectedEdge,
+                deleted: true,
+            });
+        }
+    }, [nodes, edges, removeNodeById, storeOnConnect]);
+
 
     // Handler untuk button publish
     const handleDesktopPublish = useCallback(() => {
@@ -608,6 +626,34 @@ const updateNodePosition = useFlowStore((s) => s.updateNodePosition);
                         </Panel>
                     )}
                 </ReactFlow>
+
+                {/* 🔥 Tombol Hapus untuk Mobile & Tablet */}
+                {(isMobile || isTablet) && (nodes.some(n => n.selected) || edges.some(e => e.selected)) && (
+                    <button
+                        onClick={handleDeleteSelected}
+                        style={{
+                            position: "absolute",
+                            bottom: "20px",
+                            right: "20px",
+                            padding: "12px 16px",
+                            backgroundColor: "#DC2626",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "9999px",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            boxShadow: "0 8px 20px rgba(220, 38, 38, 0.35)",
+                            zIndex: 50,
+                            cursor: "pointer",
+                        }}
+                    >
+                        🗑 Hapus
+                    </button>
+                )}
+
 
                 {/* Connection Error Display */}
                 {connectionError && (

@@ -190,7 +190,7 @@ export default function Login() {
                             <div className="mt-6 pt-6 border-t border-gray-200">
                                 <div className="text-center space-y-1">
                                     <p className="text-sm text-gray-600">
-                                        <span className="font-small">Username:</span> admin@gmail.com
+                                        <span className="font-small">Email:</span> admin@gmail.com
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         <span className="font-small">Password:</span> 123456
